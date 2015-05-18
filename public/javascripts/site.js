@@ -3,7 +3,7 @@ $(function() {
 });
 
 var audioElement = document.createElement('audio');
-audioElement.setAttribute('src', '/sounds/barking-dog.mp3');
+audioElement.setAttribute('src', '/sounds/lux-laugh.mp3');
 //audioElement.setAttribute('autoplay', 'autoplay');
 var makingNoise = false;
 
@@ -41,7 +41,7 @@ function MainPageLoop() {
 
 function DoMotionSensor(pollTimeJs)
 {
-    $.get("/MotionDetection").done(function (data) {
+    $.get("/MotionDetectionWithCamera").done(function (data) {
         if (data && data.MotionSensed) {
             if (!makingNoise)
                 MakeNoise();
