@@ -1,4 +1,5 @@
 var express = require('express');
+var jzs = require('../JzsCommon');
 var router = express.Router();
 var _gpioPin = 14;
 var _gpioConnected = false;
@@ -9,15 +10,27 @@ var Gpio, motioinSensor;
 NewMotionSensor();
 
 function NewMotionSensor() {
-    try {
-        Gpio = require('onoff').Gpio;
+
+    var onOff = jzs.utils.SafeRequire('onoff');
+    if (onOff) {
+        Gpio = onOff.Gpio;
         motioinSensor = new Gpio(_gpioPin, 'in', 'both');
         _gpioConnected = true;
         console.log("connected to GPIO pin: " + _gpioPin);
-    } catch(e) {
-        _gpioConnected = false;
-        console.error("onoff not found");
     }
+    else{
+        _gpioConnected = false;
+    }
+
+    //try {
+    //    Gpio = require('onoff').Gpio;
+    //    motioinSensor = new Gpio(_gpioPin, 'in', 'both');
+    //    _gpioConnected = true;
+    //    console.log("connected to GPIO pin: " + _gpioPin);
+    //} catch(e) {
+    //    _gpioConnected = false;
+    //    console.error("onoff not found");
+    //}
 }
 
 function exit() {
@@ -34,10 +47,27 @@ if (_gpioConnected)
     });
 }
 
+var TakePicture = function() {
+    var filename = '../CapturedImages/' + jzs.utils.Timestamp + '.jpg';
+    var RaspiCam = require("raspicam");
+    var cameraOptions = {
+        'mode': 'photo',
+        'output': filename
+    };
+    var camera = new RaspiCam(cameraOptions);
+};
+
+//Main GET
 router.get('/', function(req, res, next) {
     res.send({ MotionSensed: _motionDetected });
     console.log("motion detected: " + _motionDetected);
+
+    if (_motionDetected)
+    {
+        TakePicture();
+    }
 });
+
 
 //// button is attaced to pin 17, led to 18
 //var pin = 11;
