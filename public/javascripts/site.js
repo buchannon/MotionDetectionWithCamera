@@ -41,7 +41,7 @@ function MainPageLoop() {
 
 function DoMotionSensor(pollTimeJs)
 {
-    $.get("/MotionDetectionWithCamera").done(function (data) {
+    $.get("/motion").done(function (data) {
         if (data && data.MotionSensed) {
             if (!makingNoise)
                 MakeNoise();
@@ -53,60 +53,3 @@ function DoMotionSensor(pollTimeJs)
         }
     });
 }
-
-//var checkingMotionSensor = function(onOff) {
-//    onOff = typeof onOff !== 'undefined' ? onOff : false;
-//    alert(onOff);
-//    var _onOff = onOff;
-//    return function() { return {checking: _onOff } }
-//};
-//
-//
-//while(checkingMotionSensor().checking)
-//{
-//    DoMotionSensor(500);
-//}
-//
-//function DoMotionSensor(pollTimeJs)
-//{
-//    $.get("/MotionDetection").done(function (data) {
-//        if (data && data.MotionSensed) {
-//            MakeNoise();
-//        }
-//        else {
-//            setTimeout(DoMotionSensor, pollTimeJs);
-//        }
-//    });
-//}
-//
-//var motionSensorActive = function(){
-//    var _motionSensorActive = false;
-//    return function() {
-//        $.get("/MotionDetection").done(function (data) {
-//            if (data && data.MotionSensed) {
-//                MakeNoise();
-//            }
-//            else {
-//                setTimeout(checkMotionSensor, 500); //1000ms = 1s
-//            }
-//        });
-//    };
-//
-//    while(motionSensorActive) {
-//        $.get("/MotionDetection").done(function (data) {
-//            if (data && data.MotionSensed) {
-//                MakeNoise();
-//            }
-//            else {
-//                setTimeout(checkMotionSensor, 500); //1000ms = 1s
-//            }
-//        });
-//    }
-//};
-
-//var BlinkOff = function() {
-//    //$.get( "/ServerBlinkOn", { name: "John", time: "2pm" } )
-//    $.get("/Bulb", { OnOffValue: "0"}).done(function( data ) {
-//        //alert( data );
-//    });
-//};

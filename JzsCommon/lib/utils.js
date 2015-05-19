@@ -1,10 +1,9 @@
 console.log("jzs utils loaded");
 
-exports.Camera = {
-
+exports.Timestamp = function()
+{
+    return (new Date).getTime();
 };
-
-exports.Timestamp = (new Date).getTime();
 
 exports.SafeRequire = function(module)
 {
@@ -16,7 +15,7 @@ exports.SafeRequire = function(module)
         console.error("did not safe load module: " + module);
         return false;
     }
-}
+};
 
 
 ///*!

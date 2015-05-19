@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 //var bodyParser = require('JzsCommon');
 
 var routes = require('./routes/index');
-var motionDetectionWithCamera = require('./routes/MotionDetectionWithCamera');
+var motion = require('./routes/motion');
 
 var app = express();
 
@@ -25,7 +25,7 @@ app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-app.use('/MotionDetectionWithCamera', motionDetectionWithCamera);
+app.use('/motion', motion);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
