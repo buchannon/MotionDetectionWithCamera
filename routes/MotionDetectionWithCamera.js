@@ -2,70 +2,67 @@ var express = require('express');
 var jzs = require('../JzsCommon');
 var router = express.Router();
 var _gpioPin = 14;
-var _gpioConnected = false;
-var _motionDetected = 0;
-var _intervalMs = 500;
+var _isMotionDetectedRecently = 0;
 var Gpio, motioinSensor;
 
-NewMotionSensor();
-
-function NewMotionSensor() {
-
-    var onOff = jzs.utils.SafeRequire('onoff');
-    if (onOff) {
-        Gpio = onOff.Gpio;
-        motioinSensor = new Gpio(_gpioPin, 'in', 'both');
-        _gpioConnected = true;
-        console.log("connected to GPIO pin: " + _gpioPin);
-    }
-    else{
-        _gpioConnected = false;
-    }
-
-    //try {
-    //    Gpio = require('onoff').Gpio;
-    //    motioinSensor = new Gpio(_gpioPin, 'in', 'both');
-    //    _gpioConnected = true;
-    //    console.log("connected to GPIO pin: " + _gpioPin);
-    //} catch(e) {
-    //    _gpioConnected = false;
-    //    console.error("onoff not found");
-    //}
-}
+InitMotionDetector(MotionDetectedCallback, MotionNotDetectedCallback);
 
 function exit() {
     motioinSensor.unexport();
     process.exit();
 }
 
-if (_gpioConnected)
+function InitMotionDetector(motionDetectedCallback, motionNotDetectedCallback)
 {
-    motioinSensor.watch(function(err, isMotionDetected) {
-        if (err) exit();
-        _motionDetected = isMotionDetected;
-        console.log("motion detector reporting: " + isMotionDetected);
-    });
+    var onOff = jzs.utils.SafeRequire('onoff');
+    if (onOff) {
+        Gpio = onOff.Gpio;
+        motioinSensor = new Gpio(_gpioPin, 'in', 'both');
+        console.log("connected to GPIO pin: " + _gpioPin);
+
+        motioinSensor.watch(function(err, _isMotionDetected) {
+            if (err) exit();
+
+            if (_isMotionDetected)
+                motionDetectedCallback();
+            else
+                motionNotDetectedCallback();
+        });
+    }
 }
 
-var TakePicture = function() {
-    var filename = '../CapturedImages/' + jzs.utils.Timestamp + '.jpg';
+//Detected!
+function MotionDetectedCallback()
+{
+    console.log("Motion Detected!");
+    _isMotionDetectedRecently = 1;
+    TakePicture();
+}
+
+//No motion
+function MotionNotDetectedCallback()
+{
+    _isMotionDetectedRecently = 0;
+}
+
+var takingPicture = false;
+function TakePicture() {
+    var filename = '../captured/' + jzs.utils.Timestamp + '.jpg';
+    console.log("Taking picture to: " + filename);
     var RaspiCam = require("raspicam");
     var cameraOptions = {
         'mode': 'photo',
         'output': filename
     };
     var camera = new RaspiCam(cameraOptions);
-};
+    camera.start();
+    console.log("Picture finished");
+}
 
 //Main GET
 router.get('/', function(req, res, next) {
-    res.send({ MotionSensed: _motionDetected });
-    console.log("motion detected: " + _motionDetected);
-
-    if (_motionDetected)
-    {
-        TakePicture();
-    }
+    res.send({ MotionSensed: _isMotionDetectedRecently });
+    console.log("motion detected: " + _isMotionDetectedRecently);
 });
 
 

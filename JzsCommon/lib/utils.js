@@ -10,7 +10,7 @@ exports.SafeRequire = function(module)
 {
     try {
         var module = require(module);
-        console.log("safe loaded module: " + module);
+        console.log("safe loaded module: " + module.toString());
         return module;
     } catch(e) {
         console.error("did not safe load module: " + module);

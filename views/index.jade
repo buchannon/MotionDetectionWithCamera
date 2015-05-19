@@ -2,7 +2,9 @@ extends layout
 
 block content
     h1= title
-    p #{title} Motion Detection
+    p #{title}
+    div(class="availablePics").
+        pics
     div
         button(class="btn", data-action="bea", onClick="MakeNoise();").
             Make Noise
